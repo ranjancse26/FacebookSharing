@@ -1,0 +1,137 @@
+<html>
+<head>
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+</head>
+<body>
+	<div>	
+		<input id="loginBtn" style="width:243px;height:49px;" type="image" src="facebook-login-button.png" alt="Submit">
+		<input id="shareBtn" style="width:243px;height:49px;" type="image" src="facebook-share-button.png" alt="Submit">	
+		<input id="sendMessageBtn" type="image" src="send-message-icon.png" alt="Submit">		
+	</div>
+	
+	<textarea id="textToShare" rows="7" cols="50">
+     is such a great innovator because   . I’d love to collaborate with you on Collaborizm buddy!	 
+	</textarea>	
+	
+	<input id="collaborizmShareBtn" type="image" src="collaborizm-share-button.png" alt="Submit">
+	
+	<div id="response" />	
+		
+</body>
+</html>
+
+<script type="text/javascript">
+
+//load the JavaScript SDK
+(function(d, s, id){
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.com/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+ 
+window.fbAsyncInit = function() {
+	//SDK loaded, initialize it
+	FB.init({
+		appId      : '727076837459028',
+		xfbml      : true,
+		version    : 'v2.2'
+	});
+	
+	// When the App Runs, Just load the Login Dialog
+	LoginToFacebook();
+ 
+	//check user session and refresh it
+	FB.getLoginStatus(function(response) {
+		if (response.status === 'connected') {
+			getUserData();
+		} else {
+			//user is not authorized
+		}
+	});
+};
+
+function LoginToFacebook(){
+	FB.login(function(response) {
+		if (response.authResponse) {
+			GetUserData();
+		}
+	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+
+function LoginAndPostToFacebook(){
+	FB.login(function(response) {
+		if (response.authResponse) {
+			PostMessage();
+		}
+	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+
+function LoginAndShareCollaborizmToFacebook(){
+	FB.login(function(response) {
+		if (response.authResponse) {
+			ShareCollaborizmPage();
+		}
+	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+
+function LoginAndSendPrivateMessageToFacebook(){
+	FB.login(function(response) {
+		if (response.authResponse) {
+			SendPrivateMessage();
+		}
+	}, {scope: 'publish_actions', return_scopes: true});
+}
+
+function PostMessage(){	
+	FB.api('/me/feed', 'post', { message: $('#textToShare').val() }, function(response) {
+	  if (!response || response.error) {
+		alert('Error occured');
+	  } else {
+		$('#response').html('Successful. Post ID: ' + response.id);
+	  }
+	});
+}
+
+function SendPrivateMessage(){
+	FB.ui({
+	  method: 'send',
+	  link: 'https://www.collaborizm.com/',
+	});
+}
+
+function ShareCollaborizmPage(){
+	FB.ui({
+		  method: 'share',
+		  href: 'https://www.collaborizm.com/'
+		}, function(response){});
+}
+
+function GetUserData(){
+	FB.api('/me', function(response) {
+			$('#response').html('Hello ' + response.name);
+		});
+}
+	
+$( document ).ready(function() {
+	
+	// Default login to FB	
+	$('#loginBtn').click(function() {
+		LoginToFacebook();
+	});
+	
+	$('#sendMessageBtn').click(function() {
+		LoginAndSendPrivateMessageToFacebook();
+	});
+			
+	$('#shareBtn').click(function() {
+		LoginAndShareCollaborizmToFacebook();
+	});		
+	
+	$('#collaborizmShareBtn').click(function() {
+		LoginAndPostToFacebook();
+	});	
+});
+
+</script>
