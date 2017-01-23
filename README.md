@@ -26,3 +26,14 @@ Hit CTRL-C to stop the server
 
 Finally, navigate to browser using http://localhost:8081
 
+# Facebook Developer App Configuration
+
+Feel free to register in https://developers.facebook.com/ and then change the below appId. If you are running on local, please do add a Web platform like below
+
+![Alt text](https://github.com/ranjancse26/FacebookSharing/blob/master/FBDeveloperApp.png)
+
+FB.init({
+		appId      : '727076837459028',
+		xfbml      : true,
+		version    : 'v2.2'
+}); 
