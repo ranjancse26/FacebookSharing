@@ -18,7 +18,7 @@ ex: http-server F:\ReactJSBased -p 8081
 
 You should see something like below
 
-Starting up http-server, serving F:\Hacks\facebookcollaborizm\ReactJSBased
+Starting up http-server, serving F:\ReactJSBased
 Available on:
   http://192.168.2.6:8081
   http://127.0.0.1:8081
