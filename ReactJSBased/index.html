@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="js/react.min.js"></script>
+    <script src="js/react-dom.min.js"></script>
+    <script src="js/browser.min.js"></script>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <title>Collaborizm Facebook Sharing</title>
+</head>
+
+<body>    
+    <div id="container">
+    </div> 
+</body>
+
+<script type="text/javascript">
+
+//load the JavaScript SDK
+(function(d, s, id){
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.com/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+ 
+window.fbAsyncInit = function() {
+	FB.init({
+		appId      : '727076837459028',
+		xfbml      : true,
+		version    : 'v2.2'
+	}); 
+};
+
+function LoginToFacebook(){
+	FB.login(function(response) {
+		if (response.authResponse) {
+		}
+	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+
+function LoginAndShareCollaborizmToFacebook(){
+	FB.login(function(response) {
+		if (response.authResponse) {
+			FB.ui({
+			  method: 'share',
+	          title: $('#textToShare').val(),
+	          href: 'https://www.collaborizm.com/'
+			}, function(response){});
+		}
+	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+
+</script>
+
+<script type="text/babel">
+	    var Share= React.createClass({
+	        getInitialState:function(){
+	        return {messaging:false}
+	    },
+	       shareclick:function(){
+	           this.setState({messaging:true});
+	        console.log("Share click received");
+	    }
+        ,renderNormal:function(){
+           return(
+               <div>
+                   <input onClick={LoginToFacebook} id="loginBtn" className="share-btn" type="image" src="facebook-login-button.png" alt="Login"/>
+                   <span className="spacer"/>
+                   <input onClick={this.shareclick} className="share-btn" type="image" src="facebook-share-button.png" alt="Share" />
+                </div>
+           );
+       },
+       submitButton:function(){
+            console.log("Submit Event received");  
+       },
+       closeButton:function(){
+            this.setState({messaging:false});
+            console.log("Close event invoked");
+       },
+       renderForm:function(){
+           return(
+           <div className="form-layout">
+            <div className="form-heading">Invite a Friend to Collaborizm</div> 
+                   <div className="form-body">
+            <textarea id="textToShare" rows="7" cols="50" >
+ 	          Your Invitation message here!!
+           </textarea>
+            <br/>
+            <input type="button" id="shareBtn" onClick={LoginAndShareCollaborizmToFacebook}  className="submit-btn" value="Invite"/> 
+            <input type="button" onClick={this.closeButton} className="close-btn" value="Close"/> 
+		    </div>
+		    </div>
+        )},
+        render:function(){
+           if(this.state.messaging){
+               return this.renderForm();
+           }else{
+               return this.renderNormal();
+           }
+        }
+    });
+
+    ReactDOM.render(<Share />,document.getElementById('container'));
+</script>
+
+</html>
