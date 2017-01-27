@@ -1,78 +1,73 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
+    <meta property="og:url" content="http://collaborizmshare.comli.com/"/>
+<meta property="og:title" content="Facebook Sharing"/>
+<meta property="og:type" content="website"/>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="js/react.min.js"></script>
     <script src="js/react-dom.min.js"></script>
     <script src="js/browser.min.js"></script>
+    <link rel="stylesheet" href="css/flexboxgrid.css" type="text/css"/>
     <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Collaborizm Facebook Sharing</title>
 </head>
-
-<body>    
-    <div id="container">
-    </div> 
-</body>
-
-<script type="text/javascript">
-
-//load the JavaScript SDK
-(function(d, s, id){
-	var js, fjs = d.getElementsByTagName(s)[0];
-	if (d.getElementById(id)) {return;}
-	js = d.createElement(s); js.id = id;
-	js.src = "//connect.facebook.com/en_US/sdk.js";
-	fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
- 
-window.fbAsyncInit = function() {
-	FB.init({
-		appId      : '727076837459028',
-		xfbml      : true,
-		version    : 'v2.2'
-	}); 
-};
-
-function LoginToFacebook(){
-	FB.login(function(response) {
-		if (response.authResponse) {
-		}
-	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
-}
-
-function LoginAndShareCollaborizmToFacebook(){
-	FB.login(function(response) {
-		if (response.authResponse) {
-			FB.ui({
-			  method: 'share',
-	          title: $('#textToShare').val(),
-	          href: 'https://www.collaborizm.com/'
-			}, function(response){});
-		}
-	}, {scope: 'email,public_profile,publish_actions', return_scopes: true});
-}
-
-</script>
-
+<body>
+    <div class="row center-xs">
+        <div class="col-xs-6">
+            <div class="dialog-mid">
+            
+                <div id="response" class="dialog-heading">Login with Facebook</div>
+        <div class="dialog-body">
+            <div id="container">
+            </div>
+            <div id="url-container"></div>
+        </div>
+        <br/>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+    
 <script type="text/babel">
-	    var Share= React.createClass({
-	        getInitialState:function(){
-	        return {messaging:false}
-	    },
-	       shareclick:function(){
-	           this.setState({messaging:true});
-	        console.log("Share click received");
-	    }
+    var Share= React.createClass({
+        getInitialState:function(){
+        return {messaging:false}
+    },
+       shareclick:function(){
+           this.setState({messaging:true});
+        console.log("Share click received");
+    }
         ,renderNormal:function(){
            return(
                <div>
-                   <input onClick={LoginToFacebook} id="loginBtn" className="share-btn" type="image" src="facebook-login-button.png" alt="Login"/>
-                   <span className="spacer"/>
-                   <input onClick={this.shareclick} className="share-btn" type="image" src="facebook-share-button.png" alt="Share" />
+                   
+                   <button onClick={LoginToFacebook} className="submit-btn"><i className="fa fa-facebook-official" aria-hidden="true"></i><span className="spacer"/>Login with Facebook</button>
+                   
+                   <button onClick={this.shareclick} className="submit-btn"><i className="fa fa-facebook" aria-hidden="true"></i><span className="spacer"/>Invite a friend</button>
+                    
                 </div>
            );
+       },
+       copyText: function()
+       {
+           var copyTextarea = $('#messageShare');
+           copyTextarea.select();
+
+           try {
+              var successful = document.execCommand('copy');
+              var msg = successful ? 'successful' : 'unsuccessful';
+              console.log('Copying text command was ' + msg);
+           } catch (err) {
+              console.log('Oops, unable to copy');
+           }
        },
        submitButton:function(){
             console.log("Submit Event received");  
@@ -82,29 +77,157 @@ function LoginAndShareCollaborizmToFacebook(){
             console.log("Close event invoked");
        },
        renderForm:function(){
-           return(
-           <div className="form-layout">
-            <div className="form-heading">Invite a Friend to Collaborizm</div> 
-                   <div className="form-body">
-            <textarea id="textToShare" rows="7" cols="50" >
- 	          Your Invitation message here!!
-           </textarea>
-            <br/>
-            <input type="button" id="shareBtn" onClick={LoginAndShareCollaborizmToFacebook}  className="submit-btn" value="Invite"/> 
-            <input type="button" onClick={this.closeButton} className="close-btn" value="Close"/> 
-		    </div>
-		    </div>
-        )},
-        render:function(){
-           if(this.state.messaging){
-               return this.renderForm();
-           }else{
-               return this.renderNormal();
-           }
-        }
+               return(
+               <div className="form-layout">
+                <div className="dialog-heading">Invite a Friend to Collaborizm</div> 
+                       <div>
+               <br/>
+                Your project url here : <textarea type="text" name="inviteurl" rows="1" cols="70" placeholder="http://www.collaborizm.com/project/yourproject" id="textToShare" >
+                </textarea><br/>
+                <textarea type="text" name="message" id="messageShare" rows="7" cols="70" placeholder="Your custom message here. Note that if you want to send a private message you need to type the message in the facebook message dialog.">
+                </textarea>
+                           <br/><br/>
+                <button onClick={LoginAndSendPrivateMessageToFacebook} className="submit-btn"><i className="fa fa-facebook" aria-hidden="true"></i><span className="spacer"/>Invite via Private Message</button>
+                <button onClick={LoginAndPostToFacebook} className="submit-btn"><i className="fa fa-facebook" aria-hidden="true"></i><span className="spacer"/>Invite via Post</button>
+                <input id="copyButton" type="button" onClick={this.copyText} className="submit-btn"
+                value="Copy Message"/>
+                <input type="button" onClick={this.closeButton} className="close-btn" value="Close"/>
+    </div>
+    </div>
+            )
+           },
+               render:function(){
+                   if(this.state.messaging){
+                       
+                       return this.renderForm();
+                   }else{
+                       return this.renderNormal();
+                   }
+               }
     });
 
     ReactDOM.render(<Share />,document.getElementById('container'));
 </script>
+    
+   <script type="text/javascript">
+//load the JavaScript SDK
+(function(d, s, id){
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.com/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+ 
+window.fbAsyncInit = function() {
+  //SDK loaded, initialize it
+  FB.init({
+    appId      : '727076837459028',
+    xfbml      : true,
+    version    : 'v2.2'
+  });
+  
+  // When the App Runs, Just load the Login Dialog
+  LoginToFacebook();
+ 
+  //check user session and refresh it
+  FB.getLoginStatus(function(response) {
+    if (response.status === 'connected') {
+      getUserData();
+    } else {
+      //user is not authorized
+    }
+  });
+};
+function LoginToFacebook(){
+  FB.login(function(response) {
+    if (response.authResponse) {
+      GetUserData();
+    }
+  }, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+function LoginAndPostToFacebook(){
+  FB.login(function(response) {
+    if (response.authResponse) {
+      PostMessage();
+    }
+  }, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+function LoginAndShareCollaborizmToFacebook(){
+  FB.login(function(response) {
+    if (response.authResponse) {
+      ShareCollaborizmPage();
+    }
+  }, {scope: 'email,public_profile,publish_actions', return_scopes: true});
+}
+function LoginAndSendPrivateMessageToFacebook(){
+  FB.login(function(response) {
+    if (response.authResponse) {
+      SendPrivateMessage();
+    }
+  }, {scope: 'publish_actions', return_scopes: true});
+}
+function PostMessage(){ 
+    var strMsg=new String($('#messageShare').val()+" ");
+    var strUrl=new String($("#textToShare").val());
+    var strMessage=strMsg.concat(strUrl);
+    console.log(strUrl);
+  FB.api('/me/feed', 'post', 
+           { message: strMessage 
+           }, function(response) {
+    if (!response || response.error) {
+    alert('Error occured');
+    } else {
+    $('#response').html('Successful. Post ID: ' + response.id);
+    }
+  });
+}
+function SendPrivateMessage(){
+    var url = $("#textToShare").val();
+    console.log(url);
+  FB.ui({
+    method: 'send',
+      name : 'App Testing using name parameter',
+    link: encodeURI(url),
+        description : 'Python IoT project'
+  });
+}
+       
 
+function ShareCollaborizmPage(){
+    var messageWithLink=("#messageShare").val()+" "+$("#inviteurl").val();
+    console.log(messageWithLink);
+  FB.ui({
+      method: 'share',
+          message:$("#messageShare").val()+" "+$("#inviteurl").val()
+    }, function(response){});
+}
+function GetUserData(){
+  FB.api('/me', function(response) {
+      $('#response').html('Hello ' + response.name);
+    });
+}
+  
+$( document ).ready(function() {
+  
+  // Default login to FB  
+  $('#loginBtn').click(function() {
+    LoginToFacebook();
+  });
+  
+  $('#sendMessageBtn').click(function() {
+    LoginAndSendPrivateMessageToFacebook();
+  });
+      
+  $('#shareBtn').click(function() {
+    LoginAndShareCollaborizmToFacebook();
+  });   
+  
+  $('#collaborizmShareBtn').click(function() {
+    LoginAndPostToFacebook();
+  }); 
+});
+</script>
+
+</body>
 </html>
